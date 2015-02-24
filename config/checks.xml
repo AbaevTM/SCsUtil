@@ -76,7 +76,7 @@
     <!-- </module> -->
 
     <module name="TreeWalker">
-
+	<property name="tabWidth" value="4"/>
         <!-- Checks for Javadoc comments.                     -->
         <!-- See http://checkstyle.sf.net/config_javadoc.html -->
         <module name="JavadocMethod"/>
@@ -170,7 +170,11 @@
         <module name="FinalParameters"/>
         <module name="TodoComment"/>
         <module name="UpperEll"/>
-
+	
     </module>
+
+	<module name="SuppressionFilter">
+		<property name="file" value="${config_loc}/suppressions.xml"/>
+	</module>
 
 </module>
