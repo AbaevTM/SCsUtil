@@ -1,6 +1,7 @@
 package net.ostis.scs.util.logging;
 
 import java.io.IOException;
+import java.util.Enumeration;
 
 import org.apache.log4j.Appender;
 import org.apache.log4j.FileAppender;
@@ -16,7 +17,7 @@ import org.apache.log4j.PatternLayout;
  */
 public class LoggerLog4jImpl implements Logger {
 
-	public static final String DEFAULT_FILE_LAYOUT = "%-5p %c{1}:  %m%n";
+	public static final String DEFAULT_PATTERN_LAYOUT = "%m%n";
 
 	public static final boolean DEFAULT_APPEND_TO_FILE_POLICY = false;
 
@@ -38,26 +39,33 @@ public class LoggerLog4jImpl implements Logger {
 	public LoggerLog4jImpl(final Class<?> clientClass) {
 		super();
 		logger = org.apache.log4j.Logger.getLogger(clientClass);
+		@SuppressWarnings("unchecked")
+		Enumeration<Appender> appenders =
+				logger.getAllAppenders();
+		while (logger.getAllAppenders().hasMoreElements()) {
+			appenders.nextElement().setLayout(
+					new PatternLayout(DEFAULT_PATTERN_LAYOUT));
+		}
 	}
 
 	@Override
 	public final void debug(final Object message) {
-		logger.debug("\n" + message);
+		logger.debug(message);
 	}
 
 	@Override
 	public final void debug(final Object message, final Throwable throwable) {
-		logger.debug("\n" + message, throwable);
+		logger.debug(message, throwable);
 	}
 
 	@Override
 	public final void info(final Object message) {
-		logger.info("\n" + message);
+		logger.info(message);
 	}
 
 	@Override
 	public final void info(final Object message, final Throwable throwable) {
-		logger.info("\n" + message, throwable);
+		logger.info(message, throwable);
 	}
 
 	@Override
@@ -66,7 +74,7 @@ public class LoggerLog4jImpl implements Logger {
 		if (fileName != null) {
 			try {
 			Appender fileAppender = new FileAppender(
-					new PatternLayout(DEFAULT_FILE_LAYOUT),
+					new PatternLayout(DEFAULT_PATTERN_LAYOUT),
 					fileName,
 					DEFAULT_APPEND_TO_FILE_POLICY
 					);

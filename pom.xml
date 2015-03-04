@@ -16,6 +16,7 @@
 		<testng.version>6.8.21</testng.version>
 		<apache.commons.configuration.version>1.10</apache.commons.configuration.version>
 		<apache.commons.io.version>2.4</apache.commons.io.version>
+		<args4j.version>2.0.29</args4j.version>
 		<!-- Plugins -->
 		<checkstyle.plugin.version>2.14</checkstyle.plugin.version>
 	</properties>
@@ -72,6 +73,14 @@
 			<version>${apache.commons.io.version}</version>
 		</dependency>
 
+		<!-- Console application -->
+		
+		<dependency>
+			<groupId>args4j</groupId>
+			<artifactId>args4j</artifactId>
+			<version>${args4j.version}</version>
+		</dependency>
+		
 	</dependencies>
 	
 	<build>
