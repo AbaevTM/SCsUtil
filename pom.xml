@@ -2,37 +2,32 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.ostis</groupId>
  	<artifactId>scs.utils</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1</version>
 	<name>SCSUtils</name>
 	<description>Utils for translation and validation of SCS files.</description>
 
 	<properties>
 		<java.version>1.7</java.version>
 		<!-- Dependencies -->
-		<spring.version>4.1.4.RELEASE</spring.version>
+		<log4j.version>1.2.17</log4j.version>
 		<junit.version>4.12</junit.version>
 		<antlr.runtime.version>4.5</antlr.runtime.version>
 		<antlr.annotations.version>4.3</antlr.annotations.version>
+		<testng.version>6.8.21</testng.version>
+		<apache.commons.configuration.version>1.10</apache.commons.configuration.version>
+		<apache.commons.io.version>2.4</apache.commons.io.version>
 		<!-- Plugins -->
 		<checkstyle.plugin.version>2.14</checkstyle.plugin.version>
 	</properties>
 
 	<dependencies>
 		
-		<!-- Spring 4 dependencies -->
-
 		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-core</artifactId>
-			<version>${spring.version}</version>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>${log4j.version}</version>
 		</dependency>
- 
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context</artifactId>
-			<version>${spring.version}</version>
-		</dependency>
-	
+		
 		<!--  Tests -->
 		
 		<dependency>
@@ -43,26 +38,40 @@
 		</dependency>
 		
 		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-test</artifactId>
-			<version>${spring.version}</version>
+			<groupId>org.testng</groupId>
+			<artifactId>testng</artifactId>
+			<version>${testng.version}</version>
 			<scope>test</scope>
 		</dependency>
 		
-		<!-- ANTLR dependencies -->
+		<!-- ANTLR -->
 		
 		<dependency>
 			<groupId>org.antlr</groupId>
 			<artifactId>antlr4-runtime</artifactId>
 			<version>${antlr.runtime.version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.antlr</groupId>
 			<artifactId>antlr4-annotations</artifactId>
 			<version>${antlr.annotations.version}</version>
 		</dependency>
-			
+
+		<!--  Apache commons -->
+
+		<dependency>
+			<groupId>commons-configuration</groupId>
+			<artifactId>commons-configuration</artifactId>
+			<version>${apache.commons.configuration.version}</version>
+		</dependency>	
+
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>${apache.commons.io.version}</version>
+		</dependency>
+
 	</dependencies>
 	
 	<build>
