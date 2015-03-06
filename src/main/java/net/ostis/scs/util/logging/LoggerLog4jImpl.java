@@ -1,7 +1,11 @@
 package net.ostis.scs.util.logging;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.Enumeration;
+
+import net.ostis.scs.util.common.Property;
 
 import org.apache.log4j.Appender;
 import org.apache.log4j.FileAppender;
@@ -24,6 +28,9 @@ public class LoggerLog4jImpl implements Logger {
 	public static final int DEBUG_LOG_LEVEL = Level.DEBUG.toInt();
 
 	public static final int INFO_LOG_LEVEL = Level.INFO.toInt();
+
+	private static final String DEFAULT_LOG_FILE_NAME_KEY =
+	"settings.default_log_file_name";
 
 	private static final String FILE_APPENDER_NAME = "fileAppender";
 
@@ -48,6 +55,17 @@ public class LoggerLog4jImpl implements Logger {
 		}
 	}
 
+	/**
+	 * Enables default log file for this logger.
+	 * @param operationType operation type that will be included in file's name.
+	 */
+	public final void setDefaultLogFile(final String operationType) {
+		setLogFile(new File(
+				Property.getString(
+						DEFAULT_LOG_FILE_NAME_KEY, operationType, new Date())
+				));
+	}
+
 	@Override
 	public final void debug(final Object message) {
 		logger.debug(message);
@@ -69,13 +87,13 @@ public class LoggerLog4jImpl implements Logger {
 	}
 
 	@Override
-	public final void setLogFile(final String fileName) {
+	public final void setLogFile(final File file) {
 		logger.removeAppender(FILE_APPENDER_NAME);
-		if (fileName != null) {
+		if (file != null) {
 			try {
 			Appender fileAppender = new FileAppender(
 					new PatternLayout(DEFAULT_PATTERN_LAYOUT),
-					fileName,
+					file.getAbsolutePath(),
 					DEFAULT_APPEND_TO_FILE_POLICY
 					);
 			fileAppender.setName(FILE_APPENDER_NAME);

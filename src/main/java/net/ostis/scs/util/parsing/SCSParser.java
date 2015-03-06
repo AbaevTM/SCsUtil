@@ -2,7 +2,7 @@ package net.ostis.scs.util.parsing;
 
 import java.io.File;
 
-import net.ostis.scs.util.logging.Logger;
+import net.ostis.scs.util.logging.LoggerAware;
 import net.ostis.scs.util.parsing.antlr.SCSNewParser.SyntaxContext;
 import net.ostis.scs.util.parsing.exception.ParsingException;
 
@@ -11,7 +11,7 @@ import net.ostis.scs.util.parsing.exception.ParsingException;
  * @author Tsimur_Abayeu
  * Feb 13, 2015
  */
-public interface SCSParser {
+public interface SCSParser extends LoggerAware {
 
 	/**
 	 * Parse SCS file and build document tree.
@@ -30,11 +30,5 @@ public interface SCSParser {
 	 * while parsing.
 	 */
 	void validateFile(final File file) throws ParsingException;
-
-	/**
-	 * Sets custom implementation of logger.
-	 * @param logger to be used by parser.
-	 */
-	void setLogger(final Logger logger);
 
 }

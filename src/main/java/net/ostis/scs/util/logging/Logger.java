@@ -1,5 +1,7 @@
 package net.ostis.scs.util.logging;
 
+import java.io.File;
+
 /**
  * Custom logger.
  * @author Tsimur_Abayeu
@@ -36,9 +38,9 @@ public interface Logger {
 	/**
 	 * Sets log file name. If no file name has been set or
 	 * file name is null then file should not be created.
-	 * @param fileName name of the log file that will be created.
+	 * @param file log file that will be created.
 	 */
-	void setLogFile(final String fileName);
+	void setLogFile(final File file);
 
 	/**
 	 * Sets log level.
