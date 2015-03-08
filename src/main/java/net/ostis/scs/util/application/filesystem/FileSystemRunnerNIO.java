@@ -2,14 +2,16 @@ package net.ostis.scs.util.application.filesystem;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileVisitOption;
 import java.nio.file.FileVisitResult;
 import java.nio.file.FileVisitor;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Collections;
 
-import net.ostis.scs.util.common.Property;
+import net.ostis.scs.util.common.message.Property;
 import net.ostis.scs.util.logging.Logger;
 
 /**
@@ -89,8 +91,8 @@ public class FileSystemRunnerNIO implements FileSystemRunner {
 		try {
 			Files.walkFileTree(
 					root.toPath(),
-					null,
-					DIRECTORY_RUN_DEPTH,
+					Collections.<FileVisitOption>emptySet(),
+					depth,
 					new FilesystemRunnerVisitor(callback));
 		} catch (IOException e) {
 			// Should not happen.
@@ -117,7 +119,7 @@ public class FileSystemRunnerNIO implements FileSystemRunner {
 	 * @throws FileSystemException if root is not a directory.
 	 */
 	private void checkFileIsDirectory() throws FileSystemException {
-		if (!root.isFile()) {
+		if (!root.isDirectory()) {
 			throw new FileSystemException(Property.getString(
 					NOT_A_DIRECTORY_MESSAGE_KEY, root));
 		}
@@ -137,6 +139,11 @@ public class FileSystemRunnerNIO implements FileSystemRunner {
 	@Override
 	public final void setLogger(final Logger loggerArg) {
 		logger = loggerArg;
+	}
+
+	@Override
+	public final FileSystemRunMode getRunMode() {
+		return runMode;
 	}
 
 	/**

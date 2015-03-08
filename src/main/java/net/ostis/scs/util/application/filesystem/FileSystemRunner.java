@@ -31,4 +31,10 @@ public interface FileSystemRunner extends LoggerAware {
 	void run(final FileSystemRunnerCallback callback)
 			throws FileSystemException;
 
+	/**
+	 * Retrieves configuration of runner.
+	 * @return FileSystemRunMode value.
+	 */
+	FileSystemRunMode getRunMode();
+
 }

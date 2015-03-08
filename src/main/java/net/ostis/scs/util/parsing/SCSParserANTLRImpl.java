@@ -9,7 +9,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.file.Files;
 
-import net.ostis.scs.util.common.Property;
+import net.ostis.scs.util.common.message.Property;
 import net.ostis.scs.util.logging.Logger;
 import net.ostis.scs.util.parsing.antlr.SCSErrorListener;
 import net.ostis.scs.util.parsing.antlr.SCSNewLexer;
@@ -62,7 +62,8 @@ public class SCSParserANTLRImpl implements SCSParser {
 	}
 
 	@Override
-	public final void validateFile(final File file) throws ParsingException {
+	public final void validateFile(final File file)
+			throws ParsingException {
 		parse(file);
 	}
 
@@ -77,7 +78,8 @@ public class SCSParserANTLRImpl implements SCSParser {
 			if (encodingCheckEnabled) {
 				checkEncoding(file);
 			}
-			SCSErrorListener errorListener = new SCSErrorListener(file);
+			SCSErrorListener errorListener =
+					new SCSErrorListener(file, encodingCheckEnabled);
 			SCSNewLexer lexer = new SCSNewLexer(new ANTLRFileStream(
 					file.getAbsolutePath(), DEFAULT_FILE_ENCODING));
 			lexer.removeErrorListeners();

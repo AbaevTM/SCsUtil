@@ -1,11 +1,13 @@
 package net.ostis.scs.util.parsing.exception;
 
+import net.ostis.scs.util.common.exception.ApplicationException;
+
 /**
  * General parsing exception.
  * @author Tsimur_Abayeu
  * Feb 13, 2015
  */
-public class ParsingException extends RuntimeException {
+public class ParsingException extends ApplicationException {
 
 	/**
 	 *

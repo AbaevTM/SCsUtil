@@ -2,10 +2,11 @@ package net.ostis.scs.util.logging;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
 
-import net.ostis.scs.util.common.Property;
+import net.ostis.scs.util.common.message.Property;
 
 import org.apache.log4j.Appender;
 import org.apache.log4j.FileAppender;
@@ -29,8 +30,11 @@ public class LoggerLog4jImpl implements Logger {
 
 	public static final int INFO_LOG_LEVEL = Level.INFO.toInt();
 
+	public static final String DEFAULT_DATE_FORMAT_KEY =
+			"settings.date_format";
+
 	private static final String DEFAULT_LOG_FILE_NAME_KEY =
-	"settings.default_log_file_name";
+			"settings.default_log_file_name";
 
 	private static final String FILE_APPENDER_NAME = "fileAppender";
 
@@ -60,9 +64,11 @@ public class LoggerLog4jImpl implements Logger {
 	 * @param operationType operation type that will be included in file's name.
 	 */
 	public final void setDefaultLogFile(final String operationType) {
+		String dateString = new SimpleDateFormat(
+				Property.getString(DEFAULT_DATE_FORMAT_KEY)).format(new Date());
 		setLogFile(new File(
 				Property.getString(
-						DEFAULT_LOG_FILE_NAME_KEY, operationType, new Date())
+						DEFAULT_LOG_FILE_NAME_KEY, operationType, dateString)
 				));
 	}
 

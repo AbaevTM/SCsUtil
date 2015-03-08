@@ -16,14 +16,19 @@ public class SCSErrorListener implements ANTLRErrorListener{
 
 	private File file;
 
+	private boolean encodingChecksEnabled;
+
 	/**
 	 * Default constructor.
 	 * @param fileArg File to be parsed.
 	 * printing error messages.
 	 */
-	public SCSErrorListener(final File fileArg) {
+	public SCSErrorListener(
+			final File fileArg,
+			final boolean encodingChecksEnabledArg) {
 		super();
-		this.file = fileArg;
+		file = fileArg;
+		encodingChecksEnabled = encodingChecksEnabledArg;
 	}
 
 	@Override
@@ -51,10 +56,14 @@ public class SCSErrorListener implements ANTLRErrorListener{
 	public void syntaxError(Recognizer<?, ?> arg0, Object arg1, int arg2,
 			int arg3, String arg4, RecognitionException arg5) {
 		boolean errorAtFirstSymbol = arg2 == 1 && (arg3 == 0 || arg3 == 1);
-		if (errorAtFirstSymbol) {
+		if (encodingChecksEnabled && errorAtFirstSymbol) {
 			//TODO Maybe there is a better way to discover encoding
 			// issues earlier.
-			throw new EncodingException(file, arg5);
+			throw new EncodingException(
+					file,
+					arg5 != null ?
+							arg5
+							: new RuntimeException());
 		}
 	}
 

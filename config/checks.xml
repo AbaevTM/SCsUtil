@@ -77,9 +77,11 @@
 
     <module name="TreeWalker">
 	<property name="tabWidth" value="4"/>
-        <!-- Checks for Javadoc comments.                     -->
-        <!-- See http://checkstyle.sf.net/config_javadoc.html -->
-        <module name="JavadocMethod"/>
+       <!-- Checks for Javadoc comments.                     -->
+       <!-- See http://checkstyle.sf.net/config_javadoc.html -->
+	<!--  Disabled only to allow skipping javadoc comments on 
+		utility methods such as getters or setters, etc.-->   
+	<!--  <module name="JavadocMethod"/> -->
         <module name="JavadocType"/>
         <!--  <module name="JavadocVariable"/> -->
         <module name="JavadocStyle"/>

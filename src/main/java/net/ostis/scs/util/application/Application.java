@@ -2,12 +2,11 @@ package net.ostis.scs.util.application;
 
 import java.io.File;
 
-import net.ostis.scs.util.application.filesystem.FileSystemException;
 import net.ostis.scs.util.application.filesystem.FileSystemRunMode;
 import net.ostis.scs.util.application.filesystem.FileSystemRunner;
-import net.ostis.scs.util.application.filesystem.FileSystemRunnerCallback;
 import net.ostis.scs.util.application.filesystem.FileSystemRunnerNIO;
-import net.ostis.scs.util.common.Property;
+import net.ostis.scs.util.common.message.Message;
+import net.ostis.scs.util.common.message.Property;
 import net.ostis.scs.util.logging.Logger;
 import net.ostis.scs.util.logging.LoggerLog4jImpl;
 import net.ostis.scs.util.parsing.SCSParser;
@@ -15,7 +14,6 @@ import net.ostis.scs.util.parsing.SCSParserANTLRImpl;
 
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
-import org.kohsuke.args4j.Option;
 
 /**
  * Console application.
@@ -23,7 +21,9 @@ import org.kohsuke.args4j.Option;
  * @author Tsimur_Abayeu
  * Feb 12, 2015
  */
-public final class SCSUtilApplication {
+public final class Application {
+
+	private static final String HELP_MESSAGE_KEY = "message.help";
 
 	private static final boolean ENCODING_CHECKS_ENABLED = Boolean.valueOf(
 			Property.getString("settings.encoding-checks-enabled"));
@@ -31,7 +31,7 @@ public final class SCSUtilApplication {
 	/**
 	 * Hidden constructor.
 	 */
-	private SCSUtilApplication() {
+	private Application() {
 
 	}
 
@@ -42,38 +42,63 @@ public final class SCSUtilApplication {
 	public static void main(final String[] args) {
 		Options options = new Options();
 		CmdLineParser optionsParser = new CmdLineParser(options);
-		LoggerLog4jImpl logger = new LoggerLog4jImpl(SCSUtilApplication.class);
+		final LoggerLog4jImpl logger = new LoggerLog4jImpl(
+				Application.class);
 		try {
 			optionsParser.parseArgument(args);
+			if (options.isHelp()) {
+				logger.info(Property.getString(HELP_MESSAGE_KEY));
+				return;
+			}
 			initializeLogger(logger, options);
-			FileSystemRunner filesystemRunner =
+			FileSystemRunner runner =
 					buildFileSystemRunner(options, logger);
 			final SCSParser parser = buildSCSParser(logger);
-			switch (options.operation) {
+			AbstractFileSystemCallback callback = null;
+			logger.info(Message.startMessage(
+					options.getPath(),
+					ENCODING_CHECKS_ENABLED,
+					runner.getRunMode(),
+					options.getOperation()));
+			switch (options.getOperation()) {
 				case TRANSLATE :
 					//TODO add call to translation logic.
-					break;
+					throw new UnsupportedOperationException(
+							"TRANSLATE operation is currently unavailable.");
 				case VERIFY :
-					filesystemRunner.run(new FileSystemRunnerCallback() {
-
-						@Override
-						public void execute(final File file) {
-							parser.parseFile(file);
-						}
-
-					});
+					callback = new VerifyFileSystemCallback(parser, logger);
+					runner.run(callback);
 					break;
 				default:
 					throw new IllegalArgumentException();
 			}
+			logResult(options, logger, callback);
 		} catch (CmdLineException e) {
-			if (options.help) {
-				//TODO print help message.
-				logger.info(null);
+			if (options.isHelp()) {
+				logger.info(Property.getString(HELP_MESSAGE_KEY));
+			} else {
+				logger.info(Message.entryErrorMessage(e));
 			}
-		} catch (FileSystemException e) {
-			logger.info(e.getMessage(), e);
+		} catch (Exception e) {
+			logger.info(Message.entryErrorMessage(e));
 		}
+	}
+
+	private static void logResult(
+			final Options options,
+			final LoggerLog4jImpl logger,
+			final AbstractFileSystemCallback callback) {
+		String resultDescription = "";
+		if (callback.getStatus() == ProcessingStatus.FAILURE) {
+			resultDescription = Message.failedResultDescription(
+					callback.getFailedFiles());
+		}
+		logger.info(Message.endMessage(
+				options.getOperation(),
+				callback.getStatus(),
+				callback.getProcessedFilesNumber(),
+				callback.getFilesNumber(),
+				resultDescription));
 	}
 
 	/**
@@ -98,8 +123,8 @@ public final class SCSUtilApplication {
 			final Logger logger) {
 		FileSystemRunner filesystemRunner;
 		FileSystemRunMode runMode = null;
-		if (options.directory) {
-			if (options.recursive) {
+		if (options.isDirectory()) {
+			if (options.isRecursive()) {
 				runMode = FileSystemRunMode.DIRECTORY_RECURSIVE;
 			} else {
 				runMode = FileSystemRunMode.DIRECTORY;
@@ -109,7 +134,7 @@ public final class SCSUtilApplication {
 		}
 		filesystemRunner = new FileSystemRunnerNIO(runMode);
 		filesystemRunner.setLogger(logger);
-		filesystemRunner.setRoot(options.path);
+		filesystemRunner.setRoot(options.getPath());
 		return filesystemRunner;
 	}
 
@@ -122,106 +147,15 @@ public final class SCSUtilApplication {
 	private static void initializeLogger(
 			final LoggerLog4jImpl logger,
 			final Options options) {
-		File logFile = options.logFile;
+		File logFile = options.getLogFile();
 		if (logFile != null) {
 			logger.setLogFile(logFile);
 		} else {
-			if (options.logDefault) {
+			if (options.isLogDefault()) {
 				logger.setDefaultLogFile(
-						options.operation.name().toLowerCase());
+						options.getOperation().name().toLowerCase());
 			}
 		}
-	}
-
-	/**
-	 * Operation that should be performed
-	 * on given SCS file or directory of such files.
-	 * @author Tsimur_Abayeu
-	 * Mar 4, 2015
-	 */
-	private enum Operation {
-
-		VERIFY,
-
-		TRANSLATE;
-
-		}
-
-	/**
-	 * Contains options that have been parsed by args4j.
-	 * @author Tsimur_Abayeu
-	 * Mar 4, 2015
-	 */
-	private static class Options {
-
-		/**
-		 * Implies that application should not parse
-		 * other arguments but should print help message
-		 * describing application's console interface.
-		 */
-		@Option(
-				name = "--help")
-		private boolean help;
-
-		/**
-		 * SCS file or directory containing such files.
-		 */
-		@Option(
-				name = "-p",
-				aliases = "--path",
-				required = true)
-		private File path;
-
-		/**
-		 * Defines which type of operation should be performed.
-		 */
-		@Option(
-				name = "--do",
-				required = true)
-		private Operation operation;
-
-		/**
-		 * Implies that given file name is the name
-		 * of a folder. By default operation is performed
-		 * just for files contained in this directory.
-		 * {@link Options#recursive}
-		 *
-		 */
-		@Option(
-				name = "-d",
-				aliases = {"--directory"})
-		private boolean directory;
-
-		/**
-		 * Implies that operation should be performed
-		 * for any file under given directory including sub directories.
-		 * Depends on --directory option.
-		 */
-		@Option(
-				name = "-r",
-				aliases = {"--recursive"},
-				depends = "-d")
-		private boolean recursive;
-
-		/**
-		 * Implies that log file with default
-		 * file name should be created.
-		 *
-		 */
-		@Option(
-				name = "-l",
-				aliases = "--log")
-		private boolean logDefault;
-
-		/**
-		 * Path to log file with custom name.
-		 */
-		@Option(
-				name = "-lf",
-				aliases = "--log-file",
-				required = true)
-		private File logFile;
-
 	}
 
 }

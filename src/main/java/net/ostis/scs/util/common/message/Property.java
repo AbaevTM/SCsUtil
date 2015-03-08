@@ -1,4 +1,4 @@
-package net.ostis.scs.util.common;
+package net.ostis.scs.util.common.message;
 
 import java.io.File;
 import java.net.URISyntaxException;

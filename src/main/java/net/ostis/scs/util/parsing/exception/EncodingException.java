@@ -2,7 +2,7 @@ package net.ostis.scs.util.parsing.exception;
 
 import java.io.File;
 
-import net.ostis.scs.util.common.Property;
+import net.ostis.scs.util.common.message.Property;
 
 /**
  * Exception that is thrown when SCS file's
